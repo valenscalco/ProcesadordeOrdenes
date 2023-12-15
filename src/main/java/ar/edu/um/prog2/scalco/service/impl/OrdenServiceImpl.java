@@ -82,4 +82,12 @@ public class OrdenServiceImpl implements OrdenService {
         log.debug("Request to delete Orden : {}", id);
         ordenRepository.deleteById(id);
     }
+
+    @Override
+    public OrdenDTO toDTO(Orden orden) {
+        //log.debug("Request to convert to DTO : {}", orden);
+        OrdenDTO ordenDTO = ordenMapper.toDto(orden);
+        //return save(ordenDTO);
+        return ordenDTO;
+    }
 }

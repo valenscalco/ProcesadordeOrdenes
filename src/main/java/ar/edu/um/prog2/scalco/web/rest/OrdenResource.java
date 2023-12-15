@@ -1,18 +1,22 @@
 package ar.edu.um.prog2.scalco.web.rest;
 
+import ar.edu.um.prog2.scalco.domain.Orden;
 import ar.edu.um.prog2.scalco.repository.OrdenRepository;
 import ar.edu.um.prog2.scalco.service.OrdenService;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
+import ar.edu.um.prog2.scalco.service.dto.OrdenesDTO;
 import ar.edu.um.prog2.scalco.web.rest.errors.BadRequestAlertException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +26,7 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link ar.edu.um.prog2.scalco.domain.Orden}.
+ * REST controller for managing {@link Orden}.
  */
 @RestController
 @RequestMapping("/api/ordens")
@@ -57,6 +61,7 @@ public class OrdenResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new ordenDTO, or with status {@code 400 (Bad Request)} if the orden has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+
     @PostMapping("")
     public ResponseEntity<OrdenDTO> createOrden(@Valid @RequestBody OrdenDTO ordenDTO) throws URISyntaxException {
         log.debug("REST request to save Orden : {}", ordenDTO);
@@ -70,7 +75,14 @@ public class OrdenResource {
             .body(result);
     }
 
-    /**
+    /**lid @RequestBody OrdenDTO ordenDTO) throws URISyntaxException {
+     log.debug("REST request to save Orden : {}", ordenDTO);
+     if (ordenDTO.getId() != null) {
+     throw new BadRequestAlertException("A new orden cannot already have an ID", ENTITY_NAME, "idexists");
+     }
+     OrdenDTO result = ordenService.save(ordenDTO);
+     return ResponseEntity
+     .created(new URI("/api/ordens/" + result.getId(
      * {@code PUT  /ordens/:id} : Updates an existing orden.
      *
      * @param id the id of the ordenDTO to save.
@@ -152,16 +164,26 @@ public class OrdenResource {
     }
 
     @GetMapping("/ordenes")
-    public List<OrdenDTO> getAllOrdenes() {
+    public List<OrdenDTO> getAllOrdenes() throws JsonProcessingException {
         WebClient webClient = WebClient.builder().baseUrl(urlOrdenes).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
 
         // Make a GET request
         String response = webClient.get().retrieve().bodyToMono(String.class).block();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        OrdenesDTO mappedResponse = objectMapper.readValue(response, OrdenesDTO.class);
+        List<Orden> ordenes = mappedResponse.getOrdenes();
 
+        List<OrdenDTO> ordenesDTO = new ArrayList<>();
+
+        for (Orden orden : ordenes) {
+            OrdenDTO ordenDTO = ordenService.toDTO(orden);
+            ordenesDTO.add(ordenDTO);
+        }
         // Log the response
-        log.info("Response from {}: {}", urlOrdenes, response);
+        //log.info("Response from {}: {}", urlOrdenes, response);
         log.debug("REST request to get all Ordens");
-        return ordenService.findAll();
+        return ordenesDTO;
     }
 
     /**

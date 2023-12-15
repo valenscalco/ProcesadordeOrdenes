@@ -1,5 +1,6 @@
 package ar.edu.um.prog2.scalco.service;
 
+import ar.edu.um.prog2.scalco.domain.Orden;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
 import java.util.List;
 import java.util.Optional;
@@ -53,4 +54,6 @@ public interface OrdenService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    OrdenDTO toDTO(Orden orden);
 }
