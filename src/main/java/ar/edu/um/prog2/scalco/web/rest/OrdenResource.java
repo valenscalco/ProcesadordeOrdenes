@@ -2,6 +2,7 @@ package ar.edu.um.prog2.scalco.web.rest;
 
 import ar.edu.um.prog2.scalco.domain.Orden;
 import ar.edu.um.prog2.scalco.repository.OrdenRepository;
+import ar.edu.um.prog2.scalco.service.AnalisisService;
 import ar.edu.um.prog2.scalco.service.OrdenService;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
 import ar.edu.um.prog2.scalco.service.dto.OrdenesDTO;
@@ -46,12 +47,14 @@ public class OrdenResource {
     private String token;
 
     private final OrdenService ordenService;
+    private final AnalisisService analisisService;
 
     private final OrdenRepository ordenRepository;
 
-    public OrdenResource(OrdenService ordenService, OrdenRepository ordenRepository) {
+    public OrdenResource(OrdenService ordenService, OrdenRepository ordenRepository, AnalisisService analisisService) {
         this.ordenService = ordenService;
         this.ordenRepository = ordenRepository;
+        this.analisisService = analisisService;
     }
 
     /**
@@ -179,7 +182,9 @@ public class OrdenResource {
         for (Orden orden : ordenes) {
             OrdenDTO ordenDTO = ordenService.toDTO(orden);
             ordenesDTO.add(ordenDTO);
+            analisisService.analizarOrden(ordenDTO);
         }
+
         // Log the response
         //log.info("Response from {}: {}", urlOrdenes, response);
         log.debug("REST request to get all Ordens");
