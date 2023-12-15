@@ -14,8 +14,10 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -32,6 +34,12 @@ public class OrdenResource {
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
+
+    @Value("${infoUrl.ordenesUrl}")
+    private String urlOrdenes;
+
+    @Value("${infoUrl.token}")
+    private String token;
 
     private final OrdenService ordenService;
 
@@ -139,6 +147,19 @@ public class OrdenResource {
      */
     @GetMapping("")
     public List<OrdenDTO> getAllOrdens() {
+        log.debug("REST request to get all Ordens");
+        return ordenService.findAll();
+    }
+
+    @GetMapping("/ordenes")
+    public List<OrdenDTO> getAllOrdenes() {
+        WebClient webClient = WebClient.builder().baseUrl(urlOrdenes).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
+
+        // Make a GET request
+        String response = webClient.get().retrieve().bodyToMono(String.class).block();
+
+        // Log the response
+        log.info("Response from {}: {}", urlOrdenes, response);
         log.debug("REST request to get all Ordens");
         return ordenService.findAll();
     }
