@@ -3,6 +3,7 @@ package ar.edu.um.prog2.scalco.web.rest;
 import ar.edu.um.prog2.scalco.domain.Orden;
 import ar.edu.um.prog2.scalco.repository.OrdenRepository;
 import ar.edu.um.prog2.scalco.service.AnalisisService;
+import ar.edu.um.prog2.scalco.service.ExternalService;
 import ar.edu.um.prog2.scalco.service.OrdenService;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
 import ar.edu.um.prog2.scalco.service.dto.OrdenesDTO;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,12 +51,20 @@ public class OrdenResource {
     private final OrdenService ordenService;
     private final AnalisisService analisisService;
 
+    private final ExternalService externalService;
+
     private final OrdenRepository ordenRepository;
 
-    public OrdenResource(OrdenService ordenService, OrdenRepository ordenRepository, AnalisisService analisisService) {
+    public OrdenResource(
+        OrdenService ordenService,
+        OrdenRepository ordenRepository,
+        AnalisisService analisisService,
+        ExternalService externalService
+    ) {
         this.ordenService = ordenService;
         this.ordenRepository = ordenRepository;
         this.analisisService = analisisService;
+        this.externalService = externalService;
     }
 
     /**
@@ -168,20 +178,9 @@ public class OrdenResource {
 
     @GetMapping("/ordenes")
     public List<OrdenDTO> getAllOrdenes() throws JsonProcessingException {
-        WebClient webClient = WebClient.builder().baseUrl(urlOrdenes).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
+        List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
 
-        // Make a GET request
-        String response = webClient.get().retrieve().bodyToMono(String.class).block();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        OrdenesDTO mappedResponse = objectMapper.readValue(response, OrdenesDTO.class);
-        List<Orden> ordenes = mappedResponse.getOrdenes();
-
-        List<OrdenDTO> ordenesDTO = new ArrayList<>();
-
-        for (Orden orden : ordenes) {
-            OrdenDTO ordenDTO = ordenService.toDTO(orden);
-            ordenesDTO.add(ordenDTO);
+        for (OrdenDTO ordenDTO : ordenesDTO) {
             analisisService.analizarOrden(ordenDTO);
         }
 
@@ -189,6 +188,14 @@ public class OrdenResource {
         //log.info("Response from {}: {}", urlOrdenes, response);
         log.debug("REST request to get all Ordens");
         return ordenesDTO;
+    }
+
+    @GetMapping("/cliente")
+    public Boolean clienteVerification() throws JsonProcessingException {
+        Boolean aa = externalService.clientExists(201213);
+
+        log.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa {}", aa);
+        return aa;
     }
 
     /**

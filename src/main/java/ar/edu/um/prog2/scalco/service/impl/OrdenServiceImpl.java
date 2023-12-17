@@ -85,7 +85,7 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     public OrdenDTO toDTO(Orden orden) {
-        //log.debug("Request to convert to DTO : {}", orden);
+        log.debug("Request to convert to DTO : {}", orden);
         OrdenDTO ordenDTO = ordenMapper.toDto(orden);
         //return save(ordenDTO);
         return ordenDTO;

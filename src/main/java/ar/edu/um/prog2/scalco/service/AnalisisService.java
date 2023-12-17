@@ -22,11 +22,13 @@ public class AnalisisService {
     public void analizarOrden(OrdenDTO ordenDTO) {
         // Verificar si es posible procesar la orden
         if (esPosibleProcesar(ordenDTO)) {
-            // Ejecutar la operación de compra o venta
-            ejecutarOperacion(ordenDTO);
-
-            // Almacenar el resultado de la orden
-            almacenarResultado(ordenDTO, true);
+            if (ordenDTO.getModo().equals("AHORA")) {
+                // Ejecutar la operación de compra o venta
+                ejecutarOperacion(ordenDTO);
+            } else {
+                // Almacenar el resultado de la orden
+                almacenarResultado(ordenDTO, true);
+            }
         } else {
             // Almacenar la orden en la lista de órdenes fallidas
             almacenarResultado(ordenDTO, false);
@@ -37,13 +39,32 @@ public class AnalisisService {
 
     private boolean esPosibleProcesar(OrdenDTO ordenDTO) {
         // Lógica para verificar condiciones de procesamiento
-        return ordenDTO.getCantidad() > 0 && horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion());
+        log.info("verificando validez de la orden: {}", ordenDTO);
+        return (
+            ordenDTO.getCantidad() > 0 &&
+            horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion()) &&
+            ordenDTO.getCliente() != null &&
+            ordenDTO.getAccionId() != null
+        );
+    }
+
+    private boolean verificarCliente(Integer id) {
+        return true;
+    }
+
+    private boolean veificarAccionID(Integer id) {
+        return true;
     }
 
     // Método para verificar si una orden es instantánea
     private boolean horarioPermitido(String modo, ZonedDateTime fechaOperacion) {
         // Lógica para verificar el horario permitido según el modo de la orden
-        return "AHORA".equals(modo) && esHorarioTransacciones(fechaOperacion);
+        if ("AHORA".equals(modo) && esHorarioTransacciones(fechaOperacion)) {
+            return true;
+        } else if ("PRINCIPIODIA".equals(modo) || "FINDIA".equals(modo)) {
+            return true;
+        }
+        return false;
     }
 
     private boolean esHorarioTransacciones(ZonedDateTime fechaOperacion) {
@@ -56,6 +77,7 @@ public class AnalisisService {
 
     private void ejecutarOperacion(OrdenDTO ordenDTO) {
         // Lógica para ejecutar operaciones de compra o venta
+        log.info("\n\n\nProcesando orden: {}\n\n\n", ordenDTO);
         // Puedes interactuar con servicios externos o actualizar la base de datos
     }
 
