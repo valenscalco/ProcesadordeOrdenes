@@ -429,7 +429,14 @@ class OrdenResourceIT {
         Orden partialUpdatedOrden = new Orden();
         partialUpdatedOrden.setId(orden.getId());
 
-        partialUpdatedOrden.cliente(UPDATED_CLIENTE).accion(UPDATED_ACCION).precio(UPDATED_PRECIO).modo(UPDATED_MODO);
+        partialUpdatedOrden
+            .cliente(UPDATED_CLIENTE)
+            .accionId(UPDATED_ACCION_ID)
+            .operacion(UPDATED_OPERACION)
+            .precio(UPDATED_PRECIO)
+            .cantidad(UPDATED_CANTIDAD)
+            .fechaOperacion(UPDATED_FECHA_OPERACION)
+            .modo(UPDATED_MODO);
 
         restOrdenMockMvc
             .perform(
@@ -444,12 +451,12 @@ class OrdenResourceIT {
         assertThat(ordenList).hasSize(databaseSizeBeforeUpdate);
         Orden testOrden = ordenList.get(ordenList.size() - 1);
         assertThat(testOrden.getCliente()).isEqualTo(UPDATED_CLIENTE);
-        assertThat(testOrden.getAccionId()).isEqualTo(DEFAULT_ACCION_ID);
-        assertThat(testOrden.getAccion()).isEqualTo(UPDATED_ACCION);
-        assertThat(testOrden.getOperacion()).isEqualTo(DEFAULT_OPERACION);
+        assertThat(testOrden.getAccionId()).isEqualTo(UPDATED_ACCION_ID);
+        assertThat(testOrden.getAccion()).isEqualTo(DEFAULT_ACCION);
+        assertThat(testOrden.getOperacion()).isEqualTo(UPDATED_OPERACION);
         assertThat(testOrden.getPrecio()).isEqualTo(UPDATED_PRECIO);
-        assertThat(testOrden.getCantidad()).isEqualTo(DEFAULT_CANTIDAD);
-        assertThat(testOrden.getFechaOperacion()).isEqualTo(DEFAULT_FECHA_OPERACION);
+        assertThat(testOrden.getCantidad()).isEqualTo(UPDATED_CANTIDAD);
+        assertThat(testOrden.getFechaOperacion()).isEqualTo(UPDATED_FECHA_OPERACION);
         assertThat(testOrden.getModo()).isEqualTo(UPDATED_MODO);
     }
 

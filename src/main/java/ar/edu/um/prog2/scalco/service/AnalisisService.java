@@ -1,9 +1,11 @@
 package ar.edu.um.prog2.scalco.service;
 
 import ar.edu.um.prog2.scalco.repository.OrdenRepository;
+import ar.edu.um.prog2.scalco.service.ExternalService;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
 import ar.edu.um.prog2.scalco.service.mapper.OrdenMapper;
 import ar.edu.um.prog2.scalco.web.rest.OrdenResource;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +20,16 @@ public class AnalisisService {
     List<OrdenDTO> ordenesFallidas = new ArrayList<>();
     List<OrdenDTO> ordenesExitosas = new ArrayList<>();
     private final Logger log = LoggerFactory.getLogger(AnalisisService.class);
+    private final ExternalService externalService;
 
-    public void analizarOrden(OrdenDTO ordenDTO) {
+    public AnalisisService(ExternalService externalService) {
+        this.externalService = externalService;
+    }
+
+    public void analizarOrden(OrdenDTO ordenDTO, boolean forceProcess) throws JsonProcessingException {
         // Verificar si es posible procesar la orden
         if (esPosibleProcesar(ordenDTO)) {
-            if (ordenDTO.getModo().equals("AHORA")) {
+            if (ordenDTO.getModo().equals("AHORA") || forceProcess) {
                 // Ejecutar la operación de compra o venta
                 ejecutarOperacion(ordenDTO);
             } else {
@@ -37,14 +44,18 @@ public class AnalisisService {
         log.info("lista analisis ordenes no validas : {}", ordenesFallidas);
     }
 
-    private boolean esPosibleProcesar(OrdenDTO ordenDTO) {
+    private boolean esPosibleProcesar(OrdenDTO ordenDTO) throws JsonProcessingException {
         // Lógica para verificar condiciones de procesamiento
         log.info("verificando validez de la orden: {}", ordenDTO);
+        if (ordenDTO.getOperacion().equals("VENTA")) {
+            Integer cantidadDisponible = externalService.getClientesAccion(ordenDTO).getCantidadActual();
+            if (cantidadDisponible == null || cantidadDisponible < ordenDTO.getCantidad()) return false;
+        }
+
         return (
             ordenDTO.getCantidad() > 0 &&
             horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion()) &&
-            ordenDTO.getCliente() != null &&
-            ordenDTO.getAccionId() != null
+            externalService.clientAndAccionExists(ordenDTO.getCliente(), ordenDTO.getAccionId())
         );
     }
 
@@ -76,9 +87,10 @@ public class AnalisisService {
     }
 
     private void ejecutarOperacion(OrdenDTO ordenDTO) {
-        // Lógica para ejecutar operaciones de compra o venta
-        log.info("\n\n\nProcesando orden: {}\n\n\n", ordenDTO);
-        // Puedes interactuar con servicios externos o actualizar la base de datos
+        log.info(
+            "---------------------------------------------------------------------------------------------------------------orden procesada (en analisis): {}",
+            ordenDTO
+        );
     }
 
     private void almacenarResultado(OrdenDTO ordenDTO, boolean exitoso) {

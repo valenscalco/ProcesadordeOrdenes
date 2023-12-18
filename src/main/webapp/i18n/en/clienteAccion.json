@@ -1,0 +1,28 @@
+{
+  "procesadorOrdenesApp": {
+    "clienteAccion": {
+      "home": {
+        "title": "Cliente Accions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Cliente Accion",
+        "createOrEditLabel": "Create or edit a Cliente Accion",
+        "notFound": "No Cliente Accions found"
+      },
+      "created": "A new Cliente Accion is created with identifier {{ param }}",
+      "updated": "A Cliente Accion is updated with identifier {{ param }}",
+      "deleted": "A Cliente Accion is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Cliente Accion {{ id }}?"
+      },
+      "detail": {
+        "title": "Cliente Accion"
+      },
+      "id": "ID",
+      "cliente": "Cliente",
+      "accionId": "Accion Id",
+      "accion": "Accion",
+      "cantidadActual": "Cantidad Actual",
+      "observaciones": "Observaciones"
+    }
+  }
+}

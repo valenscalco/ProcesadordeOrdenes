@@ -1,0 +1,28 @@
+{
+  "procesadorOrdenesApp": {
+    "clienteAccion": {
+      "home": {
+        "title": "Cliente Accions",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Cliente Accion",
+        "createOrEditLabel": "Crear o editar Cliente Accion",
+        "notFound": "Ningún Cliente Accions encontrado"
+      },
+      "created": "Un nuevo Cliente Accion ha sido creado con el identificador {{ param }}",
+      "updated": "Un Cliente Accion ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Cliente Accion ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Cliente Accion {{ id }}?"
+      },
+      "detail": {
+        "title": "Cliente Accion"
+      },
+      "id": "ID",
+      "cliente": "Cliente",
+      "accionId": "Accion Id",
+      "accion": "Accion",
+      "cantidadActual": "Cantidad Actual",
+      "observaciones": "Observaciones"
+    }
+  }
+}

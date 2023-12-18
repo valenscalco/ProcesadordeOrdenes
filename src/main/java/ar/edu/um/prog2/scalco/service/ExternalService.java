@@ -1,6 +1,7 @@
 package ar.edu.um.prog2.scalco.service;
 
 import ar.edu.um.prog2.scalco.domain.Orden;
+import ar.edu.um.prog2.scalco.service.dto.ClienteAccionDTO;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
 import ar.edu.um.prog2.scalco.service.dto.OrdenesDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,6 +26,12 @@ public class ExternalService {
 
     @Value("${infoUrl.clientesAllUrl}")
     private String clientesAllUrl;
+
+    @Value("${infoUrl.accionesAllUrl}")
+    private String accionesAllUrl;
+
+    @Value("${infoUrl.reporteCLiAcUrl}")
+    private String reporteCLiAcUrl;
 
     private final OrdenService ordenService;
 
@@ -51,10 +58,10 @@ public class ExternalService {
         return ordenesDTO;
     }
 
-    public Boolean clientExists(Integer id) throws JsonProcessingException {
+    public Boolean clientAndAccionExists(Integer clienteID, Integer accionID) {
         WebClient webClient = WebClient
             .builder()
-            .baseUrl(clientesAllUrl + id.toString())
+            .baseUrl(reporteCLiAcUrl + "clienteId=" + clienteID.toString() + "&accionId=" + accionID.toString())
             .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
             .build();
 
@@ -62,5 +69,21 @@ public class ExternalService {
         Integer response = webClient.get().retrieve().toBodilessEntity().block().getStatusCode().value();
 
         return response == 200;
+    }
+
+    public ClienteAccionDTO getClientesAccion(OrdenDTO ordenDTO) throws JsonProcessingException {
+        WebClient webClient = WebClient
+            .builder()
+            .baseUrl(reporteCLiAcUrl + "clienteId=" + ordenDTO.getCliente().toString() + "&accionId=" + ordenDTO.getAccionId().toString())
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+            .build();
+
+        // Make a GET request
+        String response = webClient.get().retrieve().bodyToMono(String.class).block();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        ClienteAccionDTO mappedResponse = objectMapper.readValue(response, ClienteAccionDTO.class);
+
+        return mappedResponse;
     }
 }

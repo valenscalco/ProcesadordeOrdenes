@@ -177,25 +177,22 @@ public class OrdenResource {
     }
 
     @GetMapping("/ordenes")
-    public List<OrdenDTO> getAllOrdenes() throws JsonProcessingException {
-        List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+    public List<OrdenDTO> getAllOrdenes() {
+        List<OrdenDTO> ordenesDTO = null;
+        try {
+            ordenesDTO = externalService.getAllOrdenes();
+        } catch (JsonProcessingException e) {}
 
         for (OrdenDTO ordenDTO : ordenesDTO) {
-            analisisService.analizarOrden(ordenDTO);
+            try {
+                analisisService.analizarOrden(ordenDTO, false);
+            } catch (JsonProcessingException e) {}
         }
 
         // Log the response
         //log.info("Response from {}: {}", urlOrdenes, response);
         log.debug("REST request to get all Ordens");
         return ordenesDTO;
-    }
-
-    @GetMapping("/cliente")
-    public Boolean clienteVerification() throws JsonProcessingException {
-        Boolean aa = externalService.clientExists(201213);
-
-        log.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa {}", aa);
-        return aa;
     }
 
     /**
