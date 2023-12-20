@@ -54,6 +54,5 @@ public interface OrdenService {
      * @param id the id of the entity.
      */
     void delete(Long id);
-
     OrdenDTO toDTO(Orden orden);
 }

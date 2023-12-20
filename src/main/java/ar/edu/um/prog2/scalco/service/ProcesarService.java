@@ -21,37 +21,22 @@ public class ProcesarService {
         this.externalService = externalService;
     }
 
-    //@Scheduled(cron = "* * 9 * * ?")
-    @Scheduled(cron = "1 * * * * ?")
-    public void procesarOrdenesInicioDia() {
-        if (analisisService.ordenesExitosas == null || analisisService.ordenesExitosas.isEmpty()) {
-            log.info("TRATANDO------------------: {}");
-            return;
-        }
-        for (OrdenDTO ordenDTO : analisisService.ordenesExitosas) {
-            if (ordenDTO.getModo().equals("PRINCIPIODIA")) {
-                log.info(
-                    "---------------------------------------------------------------------------------------------------------------orden procesada (en iniciodia): {}",
-                    ordenDTO
-                );
-            }
-        }
+    @Scheduled(cron = "7 19 * * * ?")
+    //@Scheduled(cron = "1 * * * * ?")
+    public void procesarOrdenesInicioDia() throws JsonProcessingException {
+        externalService.getAllOrdenes();
+        analisisService.analizarNoProcesadas("PRINCIPIODIA");
     }
 
-    @Scheduled(cron = "1 * * * * ?")
+    //@Scheduled(cron = "* * * * * ?")
     public void procesarOrdenesFinDia() throws JsonProcessingException {
-        if (analisisService.ordenesExitosas == null || analisisService.ordenesExitosas.isEmpty()) {
-            log.info("TRATANDO FINDIA------------------: {}");
-            return;
-        }
-        for (OrdenDTO ordenDTO : analisisService.ordenesExitosas) {
-            if (ordenDTO.getModo().equals("FINDIA")) {
-                analisisService.analizarOrden(ordenDTO, true);
-                log.info(
-                    "---------------------------------------------------------------------------------------------------------------orden procesada (en findia): {}",
-                    ordenDTO
-                );
-            }
-        }
+        externalService.getAllOrdenes();
+        analisisService.analizarNoProcesadas("FINDIA");
+    }
+
+    //@Scheduled(cron = "* 1 * * * ?")
+    public void procesarOrdenesAhora() throws JsonProcessingException {
+        externalService.getAllOrdenes();
+        analisisService.analizarNoProcesadas("AHORA");
     }
 }

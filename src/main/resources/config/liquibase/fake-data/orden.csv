@@ -1,11 +1,11 @@
-id;cliente;accion_id;accion;operacion;precio;cantidad;fecha_operacion;modo
-1;18917;5301;harmful honeymoon strictly;gondola;24989.69;25113;2023-12-13T13:01:01;gee glistening gee
-2;5458;28329;hourly steel how;anenst win gift;6049.85;29628;2023-12-13T13:26:07;arrogantly hmph phooey
-3;30837;30736;ah deforest after;witness foolishly;10314.28;7050;2023-12-13T00:06:54;furthermore
-4;13005;31943;unaccountably vaguely privilege;anenst topic always;32566.91;23826;2023-12-13T19:24:58;given thrill
-5;17101;13099;consequently;institution taro promenade;14233.06;15099;2023-12-13T19:28:55;acidic quickly
-6;7697;16670;hoarse;scripture;14845.95;11886;2023-12-13T04:49:51;gosh save
-7;12312;31571;wasteful venerate under;proceedings utterly inasmuch;30404.03;23279;2023-12-13T19:13:40;heavily rough
-8;6836;32351;naturally pit furthermore;boring whose;14494.58;24020;2023-12-13T01:04:39;including frilly below
-9;12595;1245;unto;after when;2213.82;29456;2023-12-12T21:36:09;pfft
-10;19656;19515;barbecue cross;quartz ah fooey;24769.28;1362;2023-12-13T04:00:31;little tortellini station
+id;cliente;accion_id;accion;operacion;precio;cantidad;fecha_operacion;modo;operacion_exitosa;operacion_observaciones
+1;18917;5301;harmful honeymoon strictly;gondola;24989.69;25113;2023-12-13T13:01:01;gee glistening gee;true;doubter mealy while
+2;8510;28158;instantly;standardize who besides;2550.81;1281;2023-12-13T13:24:14;ew;true;scupper
+3;26298;32189;impart sorrow;down;14572.72;13629;2023-12-12T21:21:33;hastily damaged;true;prime boar recent
+4;9422;10025;measly meanwhile;clan hardening content;14823.49;26479;2023-12-13T09:27:37;as gently;false;yum
+5;2005;24141;promenade eyrie gosh;what along;12335.43;10375;2023-12-13T03:54:45;liquid;false;miserably willfully nautical
+6;30935;9202;making;glut foster;18820.56;29762;2023-12-13T13:35:34;better;true;resign yippee fiberglass
+7;21649;27214;miss;max;9451.52;7497;2023-12-13T08:13:22;transcend meanwhile phooey;true;what alley ah
+8;23275;26590;fully;ah;24634.91;2213;2023-12-12T23:33:31;blissful of or;false;ouch intently
+9;9013;13507;fooey;partially inside above;16020.37;9075;2023-12-13T00:40:25;whoa;false;partnership gladly carelessly
+10;29579;12711;immense horrible;yet;24184.98;30933;2023-12-13T01:56:18;localize after suspenders;true;bah entitle great

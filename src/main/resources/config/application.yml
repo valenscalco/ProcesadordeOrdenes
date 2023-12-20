@@ -175,7 +175,7 @@ info:
 # ===================================================================
 infoUrl:
   token: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YWxlbnNjYWxjbyIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3MzE2OTcwMTJ9.GwTdg_rcJqo5tcQcDnQInbkKZHSKHjI-f2Enb7JhQkDV3PWWPh3_ZrX3ChmOrnt4N2khSFu6hTKZBNsNIYsfow
-  ordenesUrlmine: http://127.0.0.1:8080/api/ordenes/ordenes
+  ordenesUrlmine: http://127.0.0.1:8080/api/ordens/ordenes
   ordenesUrl: http://192.168.194.254:8000/api/ordenes/ordenes
   clientesAllUrl: http://192.168.194.254:8000/api/clientes/
   accionesAllUrl: http://192.168.194.254:8000/api/acciones/

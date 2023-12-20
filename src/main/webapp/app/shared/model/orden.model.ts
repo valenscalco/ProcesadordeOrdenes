@@ -10,6 +10,10 @@ export interface IOrden {
   cantidad?: number;
   fechaOperacion?: dayjs.Dayjs;
   modo?: string | null;
+  operacionExitosa?: boolean | null;
+  operacionObservaciones?: string | null;
 }
 
-export const defaultValue: Readonly<IOrden> = {};
+export const defaultValue: Readonly<IOrden> = {
+  operacionExitosa: false,
+};

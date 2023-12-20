@@ -42,6 +42,14 @@
     {
       "fieldName": "modo",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "operacionExitosa",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "operacionObservaciones",
+      "fieldType": "String"
     }
   ],
   "jpaMetamodelFiltering": false,

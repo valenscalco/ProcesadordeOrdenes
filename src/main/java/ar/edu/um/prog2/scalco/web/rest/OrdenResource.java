@@ -177,22 +177,24 @@ public class OrdenResource {
     }
 
     @GetMapping("/ordenes")
-    public List<OrdenDTO> getAllOrdenes() {
+    public List<OrdenDTO> getAllOrdenes() throws JsonProcessingException {
         List<OrdenDTO> ordenesDTO = null;
-        try {
-            ordenesDTO = externalService.getAllOrdenes();
-        } catch (JsonProcessingException e) {}
+        ordenesDTO = externalService.getAllOrdenes();
 
         for (OrdenDTO ordenDTO : ordenesDTO) {
-            try {
-                analisisService.analizarOrden(ordenDTO, false);
-            } catch (JsonProcessingException e) {}
+            analisisService.analizarOrden(ordenDTO);
         }
 
         // Log the response
         //log.info("Response from {}: {}", urlOrdenes, response);
         log.debug("REST request to get all Ordens");
         return ordenesDTO;
+    }
+
+    @GetMapping("/ordenes_procesadas")
+    public List<OrdenDTO> getOrdensProcesadas() {
+        log.debug("REST request to get all Ordens");
+        return ordenService.findAll();
     }
 
     /**

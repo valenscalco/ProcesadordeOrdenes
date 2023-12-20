@@ -24,11 +24,8 @@ public class ExternalService {
     @Value("${infoUrl.token}")
     private String token;
 
-    @Value("${infoUrl.clientesAllUrl}")
-    private String clientesAllUrl;
-
-    @Value("${infoUrl.accionesAllUrl}")
-    private String accionesAllUrl;
+    @Value("${infoUrl.ordenesUrlmine}")
+    private String ordenesUrlmine;
 
     @Value("${infoUrl.reporteCLiAcUrl}")
     private String reporteCLiAcUrl;
@@ -41,6 +38,26 @@ public class ExternalService {
 
     public List<OrdenDTO> getAllOrdenes() throws JsonProcessingException {
         WebClient webClient = WebClient.builder().baseUrl(urlOrdenes).defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token).build();
+
+        // Make a GET request
+        String response = webClient.get().retrieve().bodyToMono(String.class).block();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        OrdenesDTO mappedResponse = objectMapper.readValue(response, OrdenesDTO.class);
+        List<Orden> ordenes = mappedResponse.getOrdenes();
+
+        List<OrdenDTO> ordenesDTO = new ArrayList<>();
+
+        for (Orden orden : ordenes) {
+            OrdenDTO ordenDTO = ordenService.toDTO(orden);
+            ordenService.save(ordenDTO);
+            ordenesDTO.add(ordenDTO);
+        }
+        return ordenesDTO;
+    }
+
+    public List<OrdenDTO> getOrdenesProcesadas() throws JsonProcessingException {
+        WebClient webClient = WebClient.builder().baseUrl(ordenesUrlmine).build();
 
         // Make a GET request
         String response = webClient.get().retrieve().bodyToMono(String.class).block();

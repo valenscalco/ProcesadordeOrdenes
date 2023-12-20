@@ -34,6 +34,10 @@ public class OrdenDTO implements Serializable {
 
     private String modo;
 
+    private Boolean operacionExitosa;
+
+    private String operacionObservaciones;
+
     public Long getId() {
         return id;
     }
@@ -106,6 +110,22 @@ public class OrdenDTO implements Serializable {
         this.modo = modo;
     }
 
+    public Boolean getOperacionExitosa() {
+        return operacionExitosa;
+    }
+
+    public void setOperacionExitosa(Boolean operacionExitosa) {
+        this.operacionExitosa = operacionExitosa;
+    }
+
+    public String getOperacionObservaciones() {
+        return operacionObservaciones;
+    }
+
+    public void setOperacionObservaciones(String operacionObservaciones) {
+        this.operacionObservaciones = operacionObservaciones;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -140,6 +160,8 @@ public class OrdenDTO implements Serializable {
             ", cantidad=" + getCantidad() +
             ", fechaOperacion='" + getFechaOperacion() + "'" +
             ", modo='" + getModo() + "'" +
+            ", operacionExitosa='" + getOperacionExitosa() + "'" +
+            ", operacionObservaciones='" + getOperacionObservaciones() + "'" +
             "}";
     }
 }

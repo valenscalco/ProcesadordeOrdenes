@@ -25,7 +25,9 @@
       "precio": "Precio",
       "cantidad": "Cantidad",
       "fechaOperacion": "Fecha Operacion",
-      "modo": "Modo"
+      "modo": "Modo",
+      "operacionExitosa": "Operacion Exitosa",
+      "operacionObservaciones": "Operacion Observaciones"
     }
   }
 }
