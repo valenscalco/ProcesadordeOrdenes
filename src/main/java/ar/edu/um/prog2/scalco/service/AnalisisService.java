@@ -85,7 +85,7 @@ public class AnalisisService {
         // Lógica para verificar si estamos dentro del horario permitido
         Integer inicio = 9;
         Integer fin = 18;
-        return fechaOperacion.getHour() > inicio && fechaOperacion.getHour() < fin;
+        return fechaOperacion.getHour() >= inicio && fechaOperacion.getHour() <= fin;
     }
 
     private void ejecutarOperacion(OrdenDTO ordenDTO) {
