@@ -3,9 +3,7 @@ package ar.edu.um.prog2.scalco.service;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
 import ar.edu.um.prog2.scalco.service.impl.OrdenServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,24 +23,24 @@ public class ProcesarService {
     }
 
     @Scheduled(cron = "0 00 09 * * *")
-    public void procesarOrdenesInicioDia() throws JsonProcessingException {
-        externalService.getAllOrdenes();
-        analisisService.analizarNoProcesadas("PRINCIPIODIA");
+    //@Scheduled(cron = "0 */3 * * * *")
+    public List<OrdenDTO> procesarOrdenesInicioDia() throws JsonProcessingException {
+        return analisisService.analizarNoProcesadas("PRINCIPIODIA");
     }
 
     @Scheduled(cron = "0 00 18 * * *")
-    public void procesarOrdenesFinDia() throws JsonProcessingException {
-        externalService.getAllOrdenes();
-        analisisService.analizarNoProcesadas("FINDIA");
+    //@Scheduled(cron = "0 */3 * * * *")
+    public List<OrdenDTO> procesarOrdenesFinDia() throws JsonProcessingException {
+        return analisisService.analizarNoProcesadas("FINDIA");
     }
 
-    @Scheduled(cron = "0 */3 * * * *")
-    public void procesarOrdenesAhora() throws JsonProcessingException {
+    //@Scheduled(cron = "0 */3 * * * *")
+    public List<OrdenDTO> procesarOrdenesAhora() throws JsonProcessingException {
+        externalService.getAllOrdenes();
+        return analisisService.analizarNoProcesadas("AHORA");
         /*log.info("SI FUNCIONAAAAAA");
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         log.info("Hora actual: " + dateFormat.format(date));*/
-        externalService.getAllOrdenes();
-        analisisService.analizarNoProcesadas("AHORA");
     }
 }

@@ -1,15 +1,10 @@
 package ar.edu.um.prog2.scalco.service;
 
-import ar.edu.um.prog2.scalco.repository.OrdenRepository;
-import ar.edu.um.prog2.scalco.service.ExternalService;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
-import ar.edu.um.prog2.scalco.service.mapper.OrdenMapper;
-import ar.edu.um.prog2.scalco.web.rest.OrdenResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -88,7 +83,12 @@ public class AnalisisService {
         return fechaOperacion.getHour() >= inicio && fechaOperacion.getHour() <= fin;
     }
 
-    private void ejecutarOperacion(OrdenDTO ordenDTO) {
+    private void ejecutarOperacion(OrdenDTO ordenDTO) throws JsonProcessingException {
+        if ("PRINCIPIODIA".equals(ordenDTO.getModo()) || "FINDIA".equals(ordenDTO.getModo())) {
+            Float precio;
+            precio = externalService.getValorAccion(ordenDTO.getAccion());
+            ordenDTO.setPrecio(precio);
+        }
         ordenDTO.setOperacionExitosa(true);
         ordenDTO.setOperacionObservaciones("ok");
         log.info("Orden procesada con Exito");
@@ -103,7 +103,7 @@ public class AnalisisService {
         }
     }
 
-    public void analizarNoProcesadas(String modo) throws JsonProcessingException {
+    public List<OrdenDTO> analizarNoProcesadas(String modo) throws JsonProcessingException {
         List<OrdenDTO> recoveredList = ordenService.findAll();
 
         for (OrdenDTO ordenDTO : recoveredList) {
@@ -112,18 +112,32 @@ public class AnalisisService {
             }
         }
 
+        List<OrdenDTO> processedList = new ArrayList<>();
         for (OrdenDTO ordenDTO : ordenesExitosas) {
-            if (ordenDTO.getModo() == modo) {
+            if (ordenDTO.getModo().equals(modo)) {
+                log.info("Procesando orden de id: {}", ordenDTO.getId());
                 ejecutarOperacion(ordenDTO);
+                processedList.add(ordenDTO);
                 ordenService.save(ordenDTO);
             }
         }
+        if (!processedList.isEmpty()) {
+            externalService.sendReport(processedList);
+        }
+        processedList.clear();
 
         for (OrdenDTO ordenDTO : ordenesFallidas) {
             ordenService.save(ordenDTO);
         }
 
-        ordenesFallidas = new ArrayList<>();
-        ordenesExitosas = new ArrayList<>();
+        if (!ordenesFallidas.isEmpty()) {
+            externalService.sendReport(ordenesFallidas);
+        }
+
+        ordenesFallidas.clear();
+        ordenesExitosas.clear();
+
+        recoveredList = ordenService.findAll();
+        return recoveredList;
     }
 }

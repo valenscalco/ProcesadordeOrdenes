@@ -5,6 +5,7 @@ import ar.edu.um.prog2.scalco.repository.OrdenRepository;
 import ar.edu.um.prog2.scalco.service.AnalisisService;
 import ar.edu.um.prog2.scalco.service.ExternalService;
 import ar.edu.um.prog2.scalco.service.OrdenService;
+import ar.edu.um.prog2.scalco.service.ProcesarService;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
 import ar.edu.um.prog2.scalco.service.dto.OrdenesDTO;
 import ar.edu.um.prog2.scalco.web.rest.errors.BadRequestAlertException;
@@ -54,17 +55,20 @@ public class OrdenResource {
     private final ExternalService externalService;
 
     private final OrdenRepository ordenRepository;
+    private final ProcesarService procesarService;
 
     public OrdenResource(
         OrdenService ordenService,
         OrdenRepository ordenRepository,
         AnalisisService analisisService,
-        ExternalService externalService
+        ExternalService externalService,
+        ProcesarService procesarService
     ) {
         this.ordenService = ordenService;
         this.ordenRepository = ordenRepository;
         this.analisisService = analisisService;
         this.externalService = externalService;
+        this.procesarService = procesarService;
     }
 
     /**
@@ -178,22 +182,31 @@ public class OrdenResource {
 
     @GetMapping("/ordenes")
     public List<OrdenDTO> getAllOrdenes() throws JsonProcessingException {
-        List<OrdenDTO> ordenesDTO = null;
-        ordenesDTO = externalService.getAllOrdenes();
-
-        for (OrdenDTO ordenDTO : ordenesDTO) {
-            analisisService.analizarOrden(ordenDTO);
-        }
-
-        // Log the response
-        //log.info("Response from {}: {}", urlOrdenes, response);
-        log.debug("REST request to get all Ordens");
-        return ordenesDTO;
+        //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+        return procesarService.procesarOrdenesAhora();
     }
+
+    @GetMapping("/ordenes/principio")
+    public List<OrdenDTO> getOrdenesPri() throws JsonProcessingException {
+        //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+        return procesarService.procesarOrdenesInicioDia();
+    }
+
+    @GetMapping("/ordenes/fin")
+    public List<OrdenDTO> getOrdenesFin() throws JsonProcessingException {
+        //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+        return procesarService.procesarOrdenesFinDia();
+    }
+
+    /*@GetMapping("/ordenes/reportar")
+    public String getReportar() throws JsonProcessingException {
+        //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+        //return externalService.sendReport();
+    }*/
 
     @GetMapping("/ordenes_procesadas")
     public List<OrdenDTO> getOrdensProcesadas() {
-        log.debug("REST request to get all Ordens");
+        log.info("REST request to get all Ordens");
         return ordenService.findAll();
     }
 
@@ -205,7 +218,7 @@ public class OrdenResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<OrdenDTO> getOrden(@PathVariable("id") Long id) {
-        log.debug("REST request to get Orden : {}", id);
+        log.info("REST request to get Orden : {}", id);
         Optional<OrdenDTO> ordenDTO = ordenService.findOne(id);
         return ResponseUtil.wrapOrNotFound(ordenDTO);
     }
@@ -218,7 +231,7 @@ public class OrdenResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrden(@PathVariable("id") Long id) {
-        log.debug("REST request to delete Orden : {}", id);
+        log.info("REST request to delete Orden : {}", id);
         ordenService.delete(id);
         return ResponseEntity
             .noContent()

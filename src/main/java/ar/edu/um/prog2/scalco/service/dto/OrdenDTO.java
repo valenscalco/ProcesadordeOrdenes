@@ -1,8 +1,11 @@
 package ar.edu.um.prog2.scalco.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -30,6 +33,7 @@ public class OrdenDTO implements Serializable {
     private Integer cantidad;
 
     @NotNull
+    //@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime fechaOperacion;
 
     private String modo;
@@ -163,5 +167,43 @@ public class OrdenDTO implements Serializable {
             ", operacionExitosa='" + getOperacionExitosa() + "'" +
             ", operacionObservaciones='" + getOperacionObservaciones() + "'" +
             "}";
+    }
+
+    public String toJSONString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        // Convertir la fecha a ZonedDateTime con zona horaria UTC
+        ZonedDateTime fechaConvertida = ZonedDateTime.of(getFechaOperacion().toLocalDateTime(), ZoneId.of("Z"));
+        // Formatear la fecha en el nuevo formato
+        String fechaEnNuevoFormato = fechaConvertida.format(formatter);
+
+        String str =
+            "{" +
+            "\"cliente\":" +
+            getCliente() +
+            ", \"accionId\":" +
+            getAccionId() +
+            ", \"accion\":\"" +
+            getAccion() +
+            "\"" +
+            ", \"operacion\":\"" +
+            getOperacion() +
+            "\"" +
+            ", \"precio\":" +
+            getPrecio() +
+            ", \"cantidad\":" +
+            getCantidad() +
+            ", \"fechaOperacion\":\"" +
+            fechaEnNuevoFormato +
+            "\"" +
+            ", \"modo\":\"" +
+            getModo() +
+            "\"" +
+            ", \"operacionExitosa\":" +
+            getOperacionExitosa() +
+            ", \"operacionObservaciones\":\"" +
+            getOperacionObservaciones() +
+            "\"" +
+            "}";
+        return str;
     }
 }

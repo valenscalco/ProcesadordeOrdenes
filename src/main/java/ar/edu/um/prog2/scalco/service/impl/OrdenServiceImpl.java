@@ -34,7 +34,7 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     public OrdenDTO save(OrdenDTO ordenDTO) {
-        log.debug("Request to save Orden : {}", ordenDTO);
+        log.info("Request to save Orden : {}", ordenDTO);
         Orden orden = ordenMapper.toEntity(ordenDTO);
         orden = ordenRepository.save(orden);
         return ordenMapper.toDto(orden);
@@ -42,7 +42,7 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     public OrdenDTO update(OrdenDTO ordenDTO) {
-        log.debug("Request to update Orden : {}", ordenDTO);
+        log.info("Request to update Orden : {}", ordenDTO);
         Orden orden = ordenMapper.toEntity(ordenDTO);
         orden = ordenRepository.save(orden);
         return ordenMapper.toDto(orden);
@@ -50,7 +50,7 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     public Optional<OrdenDTO> partialUpdate(OrdenDTO ordenDTO) {
-        log.debug("Request to partially update Orden : {}", ordenDTO);
+        log.info("Request to partially update Orden : {}", ordenDTO);
 
         return ordenRepository
             .findById(ordenDTO.getId())
@@ -66,26 +66,26 @@ public class OrdenServiceImpl implements OrdenService {
     @Override
     @Transactional(readOnly = true)
     public List<OrdenDTO> findAll() {
-        log.debug("Request to get all Ordens");
+        log.info("Request to get all Ordens");
         return ordenRepository.findAll().stream().map(ordenMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<OrdenDTO> findOne(Long id) {
-        log.debug("Request to get Orden : {}", id);
+        log.info("Request to get Orden : {}", id);
         return ordenRepository.findById(id).map(ordenMapper::toDto);
     }
 
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Orden : {}", id);
+        log.info("Request to delete Orden : {}", id);
         ordenRepository.deleteById(id);
     }
 
     @Override
     public OrdenDTO toDTO(Orden orden) {
-        log.debug("Request to convert to DTO : {}", orden);
+        log.info("Request to convert to DTO : {}", orden);
         OrdenDTO ordenDTO = ordenMapper.toDto(orden);
         return ordenDTO;
     }
