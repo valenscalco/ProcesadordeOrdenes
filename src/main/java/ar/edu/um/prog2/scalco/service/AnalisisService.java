@@ -28,22 +28,22 @@ public class AnalisisService {
         if (esPosibleProcesar(ordenDTO)) {
             // Almacenar el resultado de la orden
             almacenarResultado(ordenDTO, true);
-            log.info("orden aregada a lista analisis ordenes validas : {}", ordenDTO);
+            log.info("Orden agregada a lista analisis ordenes validas : {}", ordenDTO);
         } else {
             // Almacenar la orden en la lista de órdenes fallidas
             ordenDTO.setOperacionExitosa(false);
             almacenarResultado(ordenDTO, false);
-            log.info("orden aregada a lista analisis ordenes no validas : {}", ordenDTO);
+            log.info("Orden agregada a lista analisis ordenes no validas : {}", ordenDTO);
         }
     }
 
     private boolean esPosibleProcesar(OrdenDTO ordenDTO) throws JsonProcessingException {
         // Lógica para verificar condiciones de procesamiento
-        log.info("verificando validez de la orden: {}", ordenDTO);
+        log.info("Verificando validez de la orden: {}", ordenDTO);
         if (ordenDTO.getOperacion().equals("VENTA")) {
             Integer cantidadDisponible = externalService.getClientesAccion(ordenDTO).getCantidadActual();
             if (cantidadDisponible == null || cantidadDisponible < ordenDTO.getCantidad()) {
-                log.info("CANTIDAD DISPONIBLE INSUFICIENTE: {}", ordenDTO);
+                log.info("Cantidad de acciones disponible para la venta insuficientes: {}", ordenDTO);
                 ordenDTO.setOperacionObservaciones("Cantidad disponible insuficiente para la venta");
                 return false;
             }
@@ -51,35 +51,39 @@ public class AnalisisService {
 
         return (
             ordenDTO.getCantidad() > 0 &&
-            horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion()) &&
+            horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion(), ordenDTO) &&
             clienteAccionValido(ordenDTO.getCliente(), ordenDTO.getAccionId())
-            //externalService.clientAndAccionExists(ordenDTO.getCliente(), ordenDTO.getAccionId())
         );
     }
 
-    // Método para verificar si una orden es instantánea
-    private boolean horarioPermitido(String modo, ZonedDateTime fechaOperacion) {
+    public boolean horarioPermitido(String modo, ZonedDateTime fechaOperacion, OrdenDTO ordenDTO) {
         // Lógica para verificar el horario permitido según el modo de la orden
         if ("AHORA".equals(modo) && esHorarioTransacciones(fechaOperacion)) {
+            log.info("Orden dentro del horario permitido");
             return true;
         } else if ("PRINCIPIODIA".equals(modo) || "FINDIA".equals(modo)) {
+            log.info("Orden dentro del horario permitido");
             return true;
         }
+        log.info("Orden fuera del horario permitido");
+        ordenDTO.setOperacionObservaciones("Orden fuera del horario permitido");
         return false;
     }
 
     private boolean clienteAccionValido(Integer cliente, Integer accionId) {
         // Lógica para verificar el horario permitido según el modo de la orden
         if (externalService.clientAndAccionExists(cliente, accionId)) {
+            log.info("Cliente y accion valido");
             return true;
         }
+        log.info("Cliente y/o accion no valido");
         return false;
     }
 
     private boolean esHorarioTransacciones(ZonedDateTime fechaOperacion) {
         // Lógica para verificar si estamos dentro del horario permitido
-        Integer inicio = 9;
-        Integer fin = 18;
+        int inicio = 9;
+        int fin = 18;
         return fechaOperacion.getHour() >= inicio && fechaOperacion.getHour() <= fin;
     }
 
@@ -88,6 +92,7 @@ public class AnalisisService {
             Float precio;
             precio = externalService.getValorAccion(ordenDTO.getAccion());
             ordenDTO.setPrecio(precio);
+            log.info("Ultimo valor de accion verificado");
         }
         ordenDTO.setOperacionExitosa(true);
         ordenDTO.setOperacionObservaciones("ok");
@@ -123,6 +128,7 @@ public class AnalisisService {
         }
         if (!processedList.isEmpty()) {
             externalService.sendReport(processedList);
+            log.info("Reporte de ordenes exitosas realizado");
         }
         processedList.clear();
 
@@ -132,6 +138,7 @@ public class AnalisisService {
 
         if (!ordenesFallidas.isEmpty()) {
             externalService.sendReport(ordenesFallidas);
+            log.info("Reporte de ordenes fallidas realizado");
         }
 
         ordenesFallidas.clear();

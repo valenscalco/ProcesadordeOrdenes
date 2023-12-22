@@ -23,24 +23,21 @@ public class ProcesarService {
     }
 
     @Scheduled(cron = "0 00 09 * * *")
-    //@Scheduled(cron = "0 */3 * * * *")
     public List<OrdenDTO> procesarOrdenesInicioDia() throws JsonProcessingException {
+        log.info("Procesando ordenes PRINCIPIODIA");
         return analisisService.analizarNoProcesadas("PRINCIPIODIA");
     }
 
     @Scheduled(cron = "0 00 18 * * *")
-    //@Scheduled(cron = "0 */3 * * * *")
     public List<OrdenDTO> procesarOrdenesFinDia() throws JsonProcessingException {
+        log.info("Procesando ordenes FINDIA");
         return analisisService.analizarNoProcesadas("FINDIA");
     }
 
-    //@Scheduled(cron = "0 */3 * * * *")
+    //@Scheduled(cron = "0 */5 * * * *")
     public List<OrdenDTO> procesarOrdenesAhora() throws JsonProcessingException {
         externalService.getAllOrdenes();
+        log.info("Procesando ordenes AHORA");
         return analisisService.analizarNoProcesadas("AHORA");
-        /*log.info("SI FUNCIONAAAAAA");
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-        Date date = new Date();
-        log.info("Hora actual: " + dateFormat.format(date));*/
     }
 }

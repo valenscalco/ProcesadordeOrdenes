@@ -10,9 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +28,6 @@ public class ExternalService {
 
     @Value("${infoUrl.token}")
     private String token;
-
-    @Value("${infoUrl.ordenesUrlmine}")
-    private String ordenesUrlmine;
 
     @Value("${infoUrl.reporteCLiAcUrl}")
     private String reporteCLiAcUrl;
@@ -66,25 +61,6 @@ public class ExternalService {
         for (Orden orden : ordenes) {
             OrdenDTO ordenDTO = ordenService.toDTO(orden);
             ordenService.save(ordenDTO);
-            ordenesDTO.add(ordenDTO);
-        }
-        return ordenesDTO;
-    }
-
-    public List<OrdenDTO> getOrdenesProcesadas() throws JsonProcessingException {
-        WebClient webClient = WebClient.builder().baseUrl(ordenesUrlmine).build();
-
-        // Make a GET request
-        String response = webClient.get().retrieve().bodyToMono(String.class).block();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        OrdenesDTO mappedResponse = objectMapper.readValue(response, OrdenesDTO.class);
-        List<Orden> ordenes = mappedResponse.getOrdenes();
-
-        List<OrdenDTO> ordenesDTO = new ArrayList<>();
-
-        for (Orden orden : ordenes) {
-            OrdenDTO ordenDTO = ordenService.toDTO(orden);
             ordenesDTO.add(ordenDTO);
         }
         return ordenesDTO;
@@ -131,6 +107,7 @@ public class ExternalService {
         JsonNode rootNode = objectMapper.readTree(response);
         JsonNode ultimoValor = rootNode.get("ultimoValor").get("valor");
         if (ultimoValor != null && ultimoValor.isNumber()) {
+            log.info("Ultimo valor de accion obtenido");
             return ultimoValor.floatValue();
         } else {
             throw new RuntimeException("No se pudo obtener el valor último de la acción.");
@@ -138,10 +115,6 @@ public class ExternalService {
     }
 
     public String sendReport(List<OrdenDTO> ordenes) throws JsonProcessingException {
-        log.info(
-            "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
-        );
-
         WebClient webClient = WebClient
             .builder()
             .baseUrl(reportarUrl) // Replace with your API endpoint
@@ -153,7 +126,6 @@ public class ExternalService {
             ordenesJSON.add(orden.toJSONString());
         }
         String ordenesJSONString = "{\"ordenes\":" + ordenesJSON + "}";
-        log.info("ordeneeeesss:  {}", ordenesJSONString);
 
         String resp = webClient
             .post()
@@ -162,15 +134,7 @@ public class ExternalService {
             .retrieve()
             .bodyToMono(String.class)
             .block();
-
-        log.info(
-            "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
-        );
-
-        log.info(
-            "reporteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee ",
-            resp
-        );
+        log.info("REST request to send Reports, done");
         return resp;
     }
 }

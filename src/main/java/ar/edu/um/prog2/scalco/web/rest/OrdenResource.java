@@ -2,16 +2,11 @@ package ar.edu.um.prog2.scalco.web.rest;
 
 import ar.edu.um.prog2.scalco.domain.Orden;
 import ar.edu.um.prog2.scalco.repository.OrdenRepository;
-import ar.edu.um.prog2.scalco.service.AnalisisService;
-import ar.edu.um.prog2.scalco.service.ExternalService;
 import ar.edu.um.prog2.scalco.service.OrdenService;
 import ar.edu.um.prog2.scalco.service.ProcesarService;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
-import ar.edu.um.prog2.scalco.service.dto.OrdenesDTO;
 import ar.edu.um.prog2.scalco.web.rest.errors.BadRequestAlertException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -19,13 +14,9 @@ import java.net.URISyntaxException;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -43,31 +34,14 @@ public class OrdenResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    @Value("${infoUrl.ordenesUrl}")
-    private String urlOrdenes;
-
-    @Value("${infoUrl.token}")
-    private String token;
-
     private final OrdenService ordenService;
-    private final AnalisisService analisisService;
-
-    private final ExternalService externalService;
 
     private final OrdenRepository ordenRepository;
     private final ProcesarService procesarService;
 
-    public OrdenResource(
-        OrdenService ordenService,
-        OrdenRepository ordenRepository,
-        AnalisisService analisisService,
-        ExternalService externalService,
-        ProcesarService procesarService
-    ) {
+    public OrdenResource(OrdenService ordenService, OrdenRepository ordenRepository, ProcesarService procesarService) {
         this.ordenService = ordenService;
         this.ordenRepository = ordenRepository;
-        this.analisisService = analisisService;
-        this.externalService = externalService;
         this.procesarService = procesarService;
     }
 
@@ -183,31 +157,22 @@ public class OrdenResource {
     @GetMapping("/ordenes")
     public List<OrdenDTO> getAllOrdenes() throws JsonProcessingException {
         //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+        log.debug("REST request to get all Ordens from external server");
         return procesarService.procesarOrdenesAhora();
     }
 
     @GetMapping("/ordenes/principio")
     public List<OrdenDTO> getOrdenesPri() throws JsonProcessingException {
         //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+        log.debug("REST request to get all Ordens from external server with Modo PRINCIPIODIA");
         return procesarService.procesarOrdenesInicioDia();
     }
 
     @GetMapping("/ordenes/fin")
     public List<OrdenDTO> getOrdenesFin() throws JsonProcessingException {
         //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
+        log.debug("REST request to get all Ordens from external server with Modo FINDIA");
         return procesarService.procesarOrdenesFinDia();
-    }
-
-    /*@GetMapping("/ordenes/reportar")
-    public String getReportar() throws JsonProcessingException {
-        //List<OrdenDTO> ordenesDTO = externalService.getAllOrdenes();
-        //return externalService.sendReport();
-    }*/
-
-    @GetMapping("/ordenes_procesadas")
-    public List<OrdenDTO> getOrdensProcesadas() {
-        log.info("REST request to get all Ordens");
-        return ordenService.findAll();
     }
 
     /**
