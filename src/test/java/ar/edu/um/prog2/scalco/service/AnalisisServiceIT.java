@@ -1,24 +1,26 @@
 package ar.edu.um.prog2.scalco.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+
+//import static org.mockito.Mockito.when;
 
 import ar.edu.um.prog2.scalco.IntegrationTest;
 import ar.edu.um.prog2.scalco.repository.OrdenRepository;
 import ar.edu.um.prog2.scalco.service.dto.OrdenDTO;
-import jakarta.transaction.Transactional;
+import com.fasterxml.jackson.core.JsonProcessingException;
+//import jakarta.transaction.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.auditing.DateTimeProvider;
+import org.springframework.test.context.TestPropertySource;
 
-@IntegrationTest
-@Transactional
+@SpringBootTest
+@TestPropertySource(locations = "classpath:/config/application.yml")
 public class AnalisisServiceIT {
 
     private static final Long id = 13l;
@@ -30,10 +32,12 @@ public class AnalisisServiceIT {
     private static final String accion = "PAM";
 
     private static final String operacion = "VENTA";
+    private static final String operacion2 = "COMPRA";
 
     private static final Float precio = 123.454f;
 
     private static final Integer cantidad = 6;
+    private static final Integer cantidad1 = 76;
 
     //@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     public static final ZonedDateTime fechaOperacion = ZonedDateTime.of(2023, 12, 12, 12, 12, 12, 12, ZoneId.of("UTC+1"));
@@ -54,9 +58,6 @@ public class AnalisisServiceIT {
 
     @Autowired
     private AnalisisService analisisService;
-
-    @MockBean
-    private DateTimeProvider dateTimeProvider;
 
     private OrdenDTO orden;
 
@@ -82,15 +83,23 @@ public class AnalisisServiceIT {
     }
 
     @Test
-    @Transactional
     public void horarioPermitido() {
-        Boolean result = analisisService.horarioPermitido(modo, fechaOperacion, orden);
-        assertThat(result).isEqualTo(true);
+        assertTrue(analisisService.horarioPermitido(modo, fechaOperacion));
 
-        Boolean result1 = analisisService.horarioPermitido(modo1, fechaOperacion, orden);
-        assertThat(result1).isEqualTo(true);
+        assertTrue(analisisService.horarioPermitido(modo1, fechaOperacion));
 
-        Boolean result2 = analisisService.horarioPermitido(modo2, fechaOperacion, orden);
-        assertThat(result2).isEqualTo(true);
+        assertTrue(analisisService.horarioPermitido(modo2, fechaOperacion));
+    }
+
+    @Test
+    public void esPosibleProcesar() throws JsonProcessingException {
+        orden.setOperacion(operacion2);
+        assertFalse(analisisService.esPosibleProcesar(orden));
+    }
+
+    @Test
+    public void NoEsPosibleProcesar() throws JsonProcessingException {
+        orden.setCantidad(cantidad1);
+        assertTrue(analisisService.esPosibleProcesar(orden));
     }
 }

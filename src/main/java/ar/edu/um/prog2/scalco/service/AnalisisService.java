@@ -37,7 +37,7 @@ public class AnalisisService {
         }
     }
 
-    private boolean esPosibleProcesar(OrdenDTO ordenDTO) throws JsonProcessingException {
+    public boolean esPosibleProcesar(OrdenDTO ordenDTO) throws JsonProcessingException {
         // Lógica para verificar condiciones de procesamiento
         log.info("Verificando validez de la orden: {}", ordenDTO);
         if (ordenDTO.getOperacion().equals("VENTA")) {
@@ -51,12 +51,18 @@ public class AnalisisService {
 
         return (
             ordenDTO.getCantidad() > 0 &&
-            horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion(), ordenDTO) &&
+            horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion()) &&
             clienteAccionValido(ordenDTO.getCliente(), ordenDTO.getAccionId())
         );
+        //return (
+        //    ordenDTO.getCantidad() > 0 &&
+        //        horarioPermitido(ordenDTO.getModo(), ordenDTO.getFechaOperacion(), ordenDTO) &&
+        //        clienteAccionValido(ordenDTO.getCliente(), ordenDTO.getAccionId())
+        // );
     }
 
-    public boolean horarioPermitido(String modo, ZonedDateTime fechaOperacion, OrdenDTO ordenDTO) {
+    //public boolean horarioPermitido(String modo, ZonedDateTime fechaOperacion, OrdenDTO ordenDTO)
+    public boolean horarioPermitido(String modo, ZonedDateTime fechaOperacion) {
         // Lógica para verificar el horario permitido según el modo de la orden
         if ("AHORA".equals(modo) && esHorarioTransacciones(fechaOperacion)) {
             log.info("Orden dentro del horario permitido");
@@ -66,7 +72,7 @@ public class AnalisisService {
             return true;
         }
         log.info("Orden fuera del horario permitido");
-        ordenDTO.setOperacionObservaciones("Orden fuera del horario permitido");
+        //ordenDTO.setOperacionObservaciones("Orden fuera del horario permitido");
         return false;
     }
 
